@@ -150,6 +150,7 @@ class CommunityAggregates:
     users_active_month: int = None
     users_active_half_year: int = None
     hot_rank: int = None
+    subscribers_local: int = None
 
 
 @dataclass
