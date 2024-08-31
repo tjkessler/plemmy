@@ -1,3 +1,4 @@
+import inspect
 import logging
 
 import requests
@@ -132,3 +133,13 @@ def create_form(arguments: dict) -> dict:
     """
     return {k: v for k, v in arguments.items()
             if v is not None and k != "self"}
+
+def call_with_filtered_kwargs(func, kwargs):
+    # Get the function's parameter names
+    func_args = inspect.signature(func).parameters
+
+    # Filter out kwargs that are not in the function's parameters
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in func_args}
+
+    # Call the function with the filtered kwargs
+    return func(**filtered_kwargs)
