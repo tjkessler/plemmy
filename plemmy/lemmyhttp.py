@@ -1327,8 +1327,6 @@ class LemmyHttp(object):
         re = post_handler(self._session, f"{self._api_url}/user/login", form)
         if re.status_code == 200:
             self._session = create_session(self._headers, re.json()["jwt"])
-        else:
-            raise Exception("Login failed with status code: " + str(re.status_code))
         return re
 
     def mark_all_as_read(self) -> requests.Response:
