@@ -1319,16 +1319,22 @@ class LemmyHttp(object):
             username_or_email (str): username or email for login
             password (str): password for login
 
+        Raises:
+            requests.ConnectionError: if no connection to server could be made
+            requests.HTTPError: if login fails with status code other than 200
+
         Returns:
             requests.Response: result of API call
         """
 
         form = create_form(locals())
         re = post_handler(self._session, f"{self._api_url}/user/login", form)
-        if re.status_code == 200:
+        if not isinstance(re, requests.Response):
+            raise requests.ConnectionError("Login failed as no connection to server could be made.")
+        elif re.status_code == 200:
             self._session = create_session(self._headers, re.json()["jwt"])
         else:
-            raise Exception("Login failed with status code: " + str(re.status_code))
+            raise requests.HTTPError("Login failed with status code: " + str(re.status_code))
         return re
 
     def mark_all_as_read(self) -> requests.Response:
