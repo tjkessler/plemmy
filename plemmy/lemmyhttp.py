@@ -1157,6 +1157,7 @@ class LemmyHttp(object):
         Returns:
             requests.Response: result of API call
         """
+
         form = create_form(locals())
         return put_handler(self._session, f"{self._api_url}/community/hide",
                             form)
