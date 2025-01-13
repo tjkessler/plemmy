@@ -1146,6 +1146,22 @@ class LemmyHttp(object):
             None, None
         )
 
+    def hide_community(self, community_id: int, hidden: bool, reason: str = '') -> requests.Response:
+        """ hide_community: Hide a community from public / "All" view. Admins only.
+
+        Args:
+            community_id (int): ID of community to hide
+            hidden (bool): True if hidden, False otherwise
+            reason (str): reason for hiding community
+
+        Returns:
+            requests.Response: result of API call
+        """
+
+        form = create_form(locals())
+        return put_handler(self._session, f"{self._api_url}/community/hide",
+                            form)
+
     def leave_admin(self) -> requests.Response:
         """ leave_admin: current user leaves admin group
 
