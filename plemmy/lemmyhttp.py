@@ -1327,13 +1327,14 @@ class LemmyHttp(object):
         return post_handler(self._session, f"{self._api_url}/post/lock", form)
 
     def login(self, username_or_email: str,
-              password: str) -> requests.Response:
+              password: str, totp_2fa_token: str = None) -> requests.Response:
         """ login: login to Lemmy instance, setting `LemmyHttp._session` jwt to
         authenticated user jwt
 
         Args:
             username_or_email (str): username or email for login
             password (str): password for login
+            totp_2fa_token (str): 2FA token if enabled
 
         Raises:
             requests.ConnectionError: if no connection to server could be made
