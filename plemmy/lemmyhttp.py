@@ -1146,6 +1146,22 @@ class LemmyHttp(object):
             None, None
         )
 
+    def hide_community(self, community_id: int, hidden: bool, reason: str = '') -> requests.Response:
+        """ hide_community: Hide a community from public / "All" view. Admins only.
+
+        Args:
+            community_id (int): ID of community to hide
+            hidden (bool): True if hidden, False otherwise
+            reason (str): reason for hiding community
+
+        Returns:
+            requests.Response: result of API call
+        """
+
+        form = create_form(locals())
+        return put_handler(self._session, f"{self._api_url}/community/hide",
+                            form)
+
     def leave_admin(self) -> requests.Response:
         """ leave_admin: current user leaves admin group
 
@@ -1311,13 +1327,20 @@ class LemmyHttp(object):
         return post_handler(self._session, f"{self._api_url}/post/lock", form)
 
     def login(self, username_or_email: str,
-              password: str) -> requests.Response:
+              password: str, totp_2fa_token: str = None) -> requests.Response:
         """ login: login to Lemmy instance, setting `LemmyHttp._session` jwt to
         authenticated user jwt
 
         Args:
             username_or_email (str): username or email for login
             password (str): password for login
+            totp_2fa_token (str): 2FA token if enabled
+
+        Raises:
+            requests.ConnectionError: if no connection to server could be made
+
+        Raises:
+            requests.ConnectionError: if no connection to server could be made
 
         Returns:
             requests.Response: result of API call
@@ -1325,10 +1348,10 @@ class LemmyHttp(object):
 
         form = create_form(locals())
         re = post_handler(self._session, f"{self._api_url}/user/login", form)
-        if re.status_code == 200:
+        if not isinstance(re, requests.Response):
+            raise requests.ConnectionError("Login failed as no connection to server could be made.")
+        elif re.status_code == 200:
             self._session = create_session(self._headers, re.json()["jwt"])
-        else:
-            raise Exception("Login failed with status code: " + str(re.status_code))
         return re
 
     def mark_all_as_read(self) -> requests.Response:
